@@ -1,9 +1,9 @@
-from backend.app.routes.health import router as health_router
-from backend.app.routes.energy import router as energy_router
-from backend.app.routes.analytics import router as analytics_router
-from backend.app.routes.forecast import router as forecast_router
-from backend.app.routes.anomalies import router as anomalies_router
-from backend.app.routes.recommendations import router as recommendations_router
+from .health import router as health_router
+from .energy import router as energy_router
+from .analytics import router as analytics_router
+from .forecast import router as forecast_router
+from .anomalies import router as anomalies_router
+from .recommendations import router as recommendations_router
 
 __all__ = [
     "health_router",

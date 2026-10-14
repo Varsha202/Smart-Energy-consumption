@@ -1,1 +1,1 @@
-from backend.app.models.schemas import *
+from .schemas import *

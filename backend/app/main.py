@@ -4,16 +4,37 @@ from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from backend.app.config import settings
-from backend.app.database import db_manager, DatabaseUnavailableException
-from backend.app.routes import (
-    health_router,
-    energy_router,
-    analytics_router,
-    forecast_router,
-    anomalies_router,
-    recommendations_router
-)
+import sys
+from pathlib import Path
+
+# Support both package-relative imports and direct script execution
+if __package__ in (None, ""):
+    _backend_dir = Path(__file__).resolve().parent.parent
+    _root_dir = _backend_dir.parent
+    for _p in (str(_root_dir), str(_backend_dir)):
+        if _p not in sys.path:
+            sys.path.insert(0, _p)
+    from app.config import settings
+    from app.database import db_manager, DatabaseUnavailableException
+    from app.routes import (
+        health_router,
+        energy_router,
+        analytics_router,
+        forecast_router,
+        anomalies_router,
+        recommendations_router
+    )
+else:
+    from .config import settings
+    from .database import db_manager, DatabaseUnavailableException
+    from .routes import (
+        health_router,
+        energy_router,
+        analytics_router,
+        forecast_router,
+        anomalies_router,
+        recommendations_router
+    )
 
 # Configure logging
 logging.basicConfig(
@@ -79,8 +100,10 @@ app.include_router(recommendations_router)
 
 if __name__ == "__main__":
     import uvicorn
+    # Auto-detect module name based on whether 'backend' package was imported
+    app_module = "backend.app.main:app" if "backend" in sys.modules else "app.main:app"
     uvicorn.run(
-        "backend.app.main:app",
+        app_module,
         host=settings.HOST,
         port=settings.PORT,
         reload=True

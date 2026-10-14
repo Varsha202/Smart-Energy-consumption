@@ -1,11 +1,11 @@
 import logging
 from fastapi import APIRouter, HTTPException, status
-from backend.app.models.schemas import (
+from ..models.schemas import (
     AnalyticsSummaryResponse,
     DailyAnalyticsResponse,
     FacilitiesResponse
 )
-from backend.app.services.analytics_service import analytics_service
+from ..services.analytics_service import analytics_service
 
 logger = logging.getLogger("energy_backend.routes.analytics")
 router = APIRouter(prefix="/api/analytics", tags=["Analytics & KPIs"])

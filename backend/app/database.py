@@ -4,7 +4,7 @@ from pymongo import MongoClient, ASCENDING
 from pymongo.collection import Collection
 from pymongo.database import Database
 from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError, PyMongoError
-from backend.app.config import settings
+from .config import settings
 
 logger = logging.getLogger("energy_backend.database")
 

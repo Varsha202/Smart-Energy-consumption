@@ -6,8 +6,8 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
-from backend.app.services.energy_service import energy_service
-from backend.app.models.schemas import (
+from .energy_service import energy_service
+from ..models.schemas import (
     ForecastResponse,
     ForecastMetrics,
     ForecastPoint

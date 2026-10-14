@@ -6,9 +6,9 @@ from pymongo import ASCENDING
 from pymongo.collection import Collection
 from pymongo.errors import PyMongoError
 
-from backend.app.config import settings
-from backend.app.database import db_manager, DatabaseUnavailableException
-from backend.app.models.schemas import (
+from ..config import settings
+from ..database import db_manager, DatabaseUnavailableException
+from ..models.schemas import (
     EnergyRecordCreate,
     EnergyRecordResponse,
     EnergyListResponse,

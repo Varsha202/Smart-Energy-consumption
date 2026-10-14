@@ -1,9 +1,9 @@
 import logging
 from typing import Dict, Any, List
 import pandas as pd
-from backend.app.config import settings
-from backend.app.services.energy_service import energy_service
-from backend.app.models.schemas import (
+from ..config import settings
+from .energy_service import energy_service
+from ..models.schemas import (
     AnalyticsSummaryResponse,
     MetricWithPercent,
     DailyAnalyticsResponse,

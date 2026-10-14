@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import IsolationForest
 
-from backend.app.services.energy_service import energy_service
-from backend.app.models.schemas import (
+from .energy_service import energy_service
+from ..models.schemas import (
     AnomaliesResponse,
     AnomalyPoint
 )

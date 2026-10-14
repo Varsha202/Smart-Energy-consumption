@@ -1,7 +1,7 @@
 import logging
 from fastapi import APIRouter, HTTPException, status
-from backend.app.models.schemas import AnomaliesResponse
-from backend.app.services.anomaly_service import anomaly_service
+from ..models.schemas import AnomaliesResponse
+from ..services.anomaly_service import anomaly_service
 
 logger = logging.getLogger("energy_backend.routes.anomalies")
 router = APIRouter(prefix="/api/anomalies", tags=["Anomaly Detection"])

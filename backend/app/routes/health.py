@@ -1,8 +1,8 @@
 from datetime import datetime
 from fastapi import APIRouter
-from backend.app.config import settings
-from backend.app.database import db_manager
-from backend.app.models.schemas import ServiceStatusResponse, HealthResponse
+from ..config import settings
+from ..database import db_manager
+from ..models.schemas import ServiceStatusResponse, HealthResponse
 
 router = APIRouter(tags=["Health & Status"])
 

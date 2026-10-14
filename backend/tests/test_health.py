@@ -1,5 +1,6 @@
 import unittest
 from fastapi.testclient import TestClient
+from backend.app.config import settings
 from backend.app.main import app
 
 
@@ -23,7 +24,7 @@ class TestHealthEndpoints(unittest.TestCase):
         self.assertIn(data["database"], ["connected", "disconnected"])
         self.assertTrue("timestamp" in data)
         self.assertTrue("version" in data)
-        self.assertEqual(data["database_name"], "smart_energy_db")
+        self.assertEqual(data["database_name"], settings.DATABASE_NAME)
         self.assertEqual(data["collection_name"], "energy_records")
 
 

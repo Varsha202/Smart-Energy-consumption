@@ -1,7 +1,7 @@
 import logging
 from fastapi import APIRouter, HTTPException, status
-from backend.app.models.schemas import RecommendationsResponse
-from backend.app.services.recommendation_service import recommendation_service
+from ..models.schemas import RecommendationsResponse
+from ..services.recommendation_service import recommendation_service
 
 logger = logging.getLogger("energy_backend.routes.recommendations")
 router = APIRouter(prefix="/api/recommendations", tags=["Recommendations"])

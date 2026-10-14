@@ -5,15 +5,15 @@ from typing import Optional
 from fastapi import APIRouter, Query, UploadFile, File, HTTPException, status
 import pandas as pd
 
-from backend.app.config import settings
-from backend.app.database import DatabaseUnavailableException
-from backend.app.models.schemas import (
+from ..config import settings
+from ..database import DatabaseUnavailableException
+from ..models.schemas import (
     EnergyListResponse,
     EnergyRecordCreate,
     EnergyRecordResponse,
     ImportResponse
 )
-from backend.app.services.energy_service import energy_service
+from ..services.energy_service import energy_service
 
 logger = logging.getLogger("energy_backend.routes.energy")
 router = APIRouter(prefix="/api/energy", tags=["Energy Data"])

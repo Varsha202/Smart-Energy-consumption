@@ -1,7 +1,7 @@
 import logging
 from fastapi import APIRouter, HTTPException, status
-from backend.app.models.schemas import ForecastResponse
-from backend.app.services.forecast_service import forecast_service
+from ..models.schemas import ForecastResponse
+from ..services.forecast_service import forecast_service
 
 logger = logging.getLogger("energy_backend.routes.forecast")
 router = APIRouter(prefix="/api/forecast", tags=["Forecasting"])
