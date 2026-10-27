@@ -9,8 +9,13 @@ venv/
 ENV/
 .env
 backend/.env
+node_modules/
+.next/
+frontend/out/
+frontend/.next/
+frontend/node_modules/
+.pytest_cache/
 .vscode/
 .idea/
 .ipynb_checkpoints/
 *.log
-.pytest_cache/

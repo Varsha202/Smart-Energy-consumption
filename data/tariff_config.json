@@ -1,0 +1,40 @@
+{
+  "profile": "commercial",
+  "billing_mode": "progressive",
+  "free_units_enabled": true,
+  "free_units_limit": 100.0,
+  "single_tier_rate": 8.5,
+  "slabs": [
+    {
+      "start_units": 0.0,
+      "end_units": 100.0,
+      "rate_per_unit": 0.0,
+      "label": "0 - 100 units (Free Tier)"
+    },
+    {
+      "start_units": 100.0,
+      "end_units": 200.0,
+      "rate_per_unit": 4.7,
+      "label": "101 - 200 units"
+    },
+    {
+      "start_units": 200.0,
+      "end_units": 400.0,
+      "rate_per_unit": 6.3,
+      "label": "201 - 400 units"
+    },
+    {
+      "start_units": 400.0,
+      "end_units": 500.0,
+      "rate_per_unit": 8.0,
+      "label": "401 - 500 units"
+    },
+    {
+      "start_units": 500.0,
+      "end_units": null,
+      "rate_per_unit": 8.4,
+      "label": "Above 500 units"
+    }
+  ],
+  "notes": "Commercial / Institutional Profile: Progressive slab configuration. Initial configuration parameters for modeling and analysis (not officially verified)."
+}

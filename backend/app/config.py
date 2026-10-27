@@ -1,6 +1,8 @@
 import os
+import json
 from pydantic_settings import BaseSettings
-from typing import List
+from pydantic import field_validator
+from typing import List, Union, Any
 
 
 class Settings(BaseSettings):
@@ -12,6 +14,7 @@ class Settings(BaseSettings):
     MONGODB_URI: str = "mongodb://localhost:27017"
     DATABASE_NAME: str = "smart_energy_db"
     ENERGY_COLLECTION: str = "energy_records"
+    TARIFF_COLLECTION: str = "tariff_settings"
     
     # Server Configuration
     HOST: str = "127.0.0.1"
@@ -27,6 +30,19 @@ class Settings(BaseSettings):
         "http://127.0.0.1:8000",
         "*"
     ]
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    def assemble_cors_origins(cls, v: Any) -> List[str]:
+        if isinstance(v, str):
+            if v.startswith("[") and v.endswith("]"):
+                try:
+                    return json.loads(v)
+                except Exception:
+                    pass
+            return [i.strip() for i in v.split(",") if i.strip()]
+        elif isinstance(v, list):
+            return v
+        return ["*"]
     
     # Energy Analytics Parameters (Standard Defensible Benchmarks)
     # CEA (Central Electricity Authority, India) CO2 Baseline database ~0.716 kg CO2/kWh for Indian grid
@@ -39,6 +55,11 @@ class Settings(BaseSettings):
         os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
         "data",
         "preprocessed_energy.csv"
+    )
+    TARIFF_FALLBACK_FILE: str = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+        "data",
+        "tariff_config.json"
     )
 
     class Config:

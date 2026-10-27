@@ -22,7 +22,8 @@ if __package__ in (None, ""):
         analytics_router,
         forecast_router,
         anomalies_router,
-        recommendations_router
+        recommendations_router,
+        tariff_router
     )
 else:
     from .config import settings
@@ -33,7 +34,8 @@ else:
         analytics_router,
         forecast_router,
         anomalies_router,
-        recommendations_router
+        recommendations_router,
+        tariff_router
     )
 
 # Configure logging
@@ -61,7 +63,7 @@ app = FastAPI(
         "AI-Driven Smart Campus Energy Consumption Analytics System API.\n\n"
         "Provides REST endpoints for energy ingestion, historical time-series analytics, "
         "facility breakdowns, machine learning forecasting, statistical anomaly detection, "
-        "and evidence-based energy conservation recommendations."
+        "evidence-based energy conservation recommendations, and progressive slab-based tariff calculations."
     ),
     lifespan=lifespan
 )
@@ -96,6 +98,7 @@ app.include_router(analytics_router)
 app.include_router(forecast_router)
 app.include_router(anomalies_router)
 app.include_router(recommendations_router)
+app.include_router(tariff_router)
 
 
 if __name__ == "__main__":

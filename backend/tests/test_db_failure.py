@@ -1,5 +1,12 @@
+import sys
+from pathlib import Path
 import unittest
 from unittest.mock import patch
+
+_repo_root = Path(__file__).resolve().parent.parent.parent
+if str(_repo_root) not in sys.path:
+    sys.path.insert(0, str(_repo_root))
+
 from fastapi.testclient import TestClient
 from backend.app.main import app
 from backend.app.database import db_manager, DatabaseUnavailableException

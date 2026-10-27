@@ -3,6 +3,7 @@ from typing import Dict, Any, List
 import pandas as pd
 from ..config import settings
 from .energy_service import energy_service
+from .tariff_service import tariff_service
 from ..models.schemas import (
     AnalyticsSummaryResponse,
     MetricWithPercent,
@@ -78,9 +79,11 @@ class AnalyticsService:
                     percentage=pct
                 )
 
-        # Standard emissions & cost calculation based on configurable parameters
+        # Standard emissions & progressive/configured cost calculation
         carbon_emissions = round(total_kwh * settings.GRID_EMISSION_FACTOR_KG_CO2_PER_KWH, 2)
-        estimated_cost = round(total_kwh * settings.DEFAULT_TARIFF_INR_PER_KWH, 2)
+        tariff_result = tariff_service.calculate_bill(total_kwh)
+        estimated_cost = tariff_result.total_bill_inr
+        effective_tariff = tariff_result.effective_rate_per_kwh
 
         return AnalyticsSummaryResponse(
             total_consumption_kwh=round(total_kwh, 2),
@@ -96,7 +99,9 @@ class AnalyticsService:
             carbon_emissions_kg_co2=carbon_emissions,
             estimated_cost_inr=estimated_cost,
             carbon_factor_kg_co2_per_kwh=settings.GRID_EMISSION_FACTOR_KG_CO2_PER_KWH,
-            tariff_inr_per_kwh=settings.DEFAULT_TARIFF_INR_PER_KWH
+            tariff_inr_per_kwh=effective_tariff,
+            tariff_mode=tariff_result.billing_mode,
+            tariff_profile=tariff_result.profile
         )
 
     def get_daily_series(self) -> DailyAnalyticsResponse:

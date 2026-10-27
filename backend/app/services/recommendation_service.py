@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import List
 from ..config import settings
 from .energy_service import energy_service
+from .tariff_service import tariff_service
 from ..models.schemas import (
     RecommendationsResponse,
     RecommendationItem
@@ -30,7 +31,7 @@ class RecommendationService:
         solar_total = float(df["solar"].sum()) if "solar" in df.columns else 0.0
         stp_total = float(df["stp"].sum()) if "stp" in df.columns else 0.0
 
-        tariff = settings.DEFAULT_TARIFF_INR_PER_KWH
+        tariff = tariff_service.get_effective_rate_or_default(total_campus_kwh)
         carbon_factor = settings.GRID_EMISSION_FACTOR_KG_CO2_PER_KWH
 
         recommendations: List[RecommendationItem] = []

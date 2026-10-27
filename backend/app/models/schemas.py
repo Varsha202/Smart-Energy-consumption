@@ -137,6 +137,8 @@ class AnalyticsSummaryResponse(BaseModel):
     estimated_cost_inr: float
     carbon_factor_kg_co2_per_kwh: float
     tariff_inr_per_kwh: float
+    tariff_mode: Optional[str] = "progressive"
+    tariff_profile: Optional[str] = "commercial"
 
 
 class DailySeriesItem(BaseModel):
@@ -259,3 +261,83 @@ class RecommendationsResponse(BaseModel):
     grid_emission_factor_kg_co2_per_kwh: float
     recommendations: List[RecommendationItem]
     methodology_notes: str
+
+
+# ---------------- TARIFF & BILLING SCHEMAS ----------------
+
+class TariffSlab(BaseModel):
+    start_units: float = Field(0.0, ge=0, description="Lower threshold of this slab in kWh")
+    end_units: Optional[float] = Field(None, description="Upper threshold in kWh, or None for infinity")
+    rate_per_unit: float = Field(..., ge=0, description="Tariff rate per unit in INR (₹/kWh)")
+    label: Optional[str] = Field(None, description="Display label (e.g. '0-100 units')")
+
+
+class TariffConfig(BaseModel):
+    profile: str = Field("commercial", description="Profile label: 'commercial', 'domestic', or 'custom'")
+    billing_mode: str = Field("progressive", description="Billing mode: 'progressive' or 'single_tier'")
+    free_units_enabled: bool = Field(True, description="Whether first 100 units are charged at ₹0/unit")
+    free_units_limit: float = Field(100.0, ge=0, description="Threshold for free units (default 100)")
+    single_tier_rate: float = Field(8.50, ge=0, description="Flat rate for single-tier billing (₹/kWh)")
+    slabs: List[TariffSlab] = Field(..., description="Ordered list of consumption slabs")
+    notes: Optional[str] = Field(
+        "Initial configuration values. Not officially verified regulatory tariffs.",
+        description="Disclaimer note"
+    )
+
+    @field_validator("slabs")
+    def validate_slabs(cls, slabs: List[TariffSlab]) -> List[TariffSlab]:
+        if not slabs:
+            raise ValueError("At least one tariff slab must be configured.")
+        slabs_sorted = sorted(slabs, key=lambda s: s.start_units)
+        if slabs_sorted[0].start_units != 0:
+            raise ValueError("The first tariff slab must start at 0 units.")
+        for i in range(len(slabs_sorted)):
+            curr = slabs_sorted[i]
+            if curr.end_units is not None and curr.end_units <= curr.start_units:
+                raise ValueError(
+                    f"Slab {i+1} has invalid range: end_units ({curr.end_units}) "
+                    f"must be strictly greater than start_units ({curr.start_units})."
+                )
+            if i > 0:
+                prev = slabs_sorted[i - 1]
+                if prev.end_units is None:
+                    raise ValueError(
+                        f"Slab {i} has an unlimited upper boundary; no subsequent slabs can follow."
+                    )
+                if curr.start_units != prev.end_units:
+                    raise ValueError(
+                        f"Slab boundary mismatch between slab {i} and {i+1}: "
+                        f"expected start {prev.end_units}, but got {curr.start_units}. "
+                        "Slabs must be strictly contiguous without gaps or overlaps."
+                    )
+        return slabs_sorted
+
+
+class SlabCalculationDetail(BaseModel):
+    slab_index: int
+    start_units: float
+    end_units: Optional[float] = None
+    rate_per_unit: float
+    units_in_slab: float
+    slab_cost: float
+    label: Optional[str] = None
+
+
+class TariffCalculationRequest(BaseModel):
+    consumption_kwh: float = Field(..., ge=0, description="Total consumption in kWh to compute bill for")
+    config: Optional[TariffConfig] = Field(None, description="Optional override configuration to test without saving")
+
+
+class TariffCalculationResult(BaseModel):
+    total_consumption_kwh: float
+    total_bill_inr: float
+    effective_rate_per_kwh: float
+    billing_mode: str
+    profile: str
+    free_units_applied: float
+    slab_breakdown: List[SlabCalculationDetail]
+    baseline_flat_cost_inr: float
+    cost_difference_inr: float
+    percentage_difference: float
+    notes: str
+
