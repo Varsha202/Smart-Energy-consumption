@@ -11,9 +11,7 @@ ENV/
 backend/.env
 node_modules/
 .next/
-frontend/out/
-frontend/.next/
-frontend/node_modules/
+frontend/
 .pytest_cache/
 .vscode/
 .idea/
