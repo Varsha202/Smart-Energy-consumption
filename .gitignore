@@ -1,9 +1,29 @@
-__pycache__/
-*.pyc
+# Next.js build output and dependencies
+node_modules/
+.next/
+out/
+build/
+.env*.local
+.env
+backend/.env
+
+# Local virtual environment and caches
 .venv/
 venv/
-.env
+__pycache__/
+*.pyc
+.pytest_cache/
 .vscode/
 .idea/
-.ipynb_checkpoints/
 *.log
+.DS_Store
+*.pem
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Untracked backend data directories if switching branches
+backend/
+data/
+models/
+outputs/
