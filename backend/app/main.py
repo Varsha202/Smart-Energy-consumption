@@ -23,7 +23,8 @@ if __package__ in (None, ""):
         forecast_router,
         anomalies_router,
         recommendations_router,
-        tariff_router
+        tariff_router,
+        notifications_router
     )
 else:
     from .config import settings
@@ -35,7 +36,8 @@ else:
         forecast_router,
         anomalies_router,
         recommendations_router,
-        tariff_router
+        tariff_router,
+        notifications_router
     )
 
 # Configure logging
@@ -99,6 +101,7 @@ app.include_router(forecast_router)
 app.include_router(anomalies_router)
 app.include_router(recommendations_router)
 app.include_router(tariff_router)
+app.include_router(notifications_router)
 
 
 if __name__ == "__main__":

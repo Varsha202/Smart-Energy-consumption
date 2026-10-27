@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     DATABASE_NAME: str = "smart_energy_db"
     ENERGY_COLLECTION: str = "energy_records"
     TARIFF_COLLECTION: str = "tariff_settings"
+    NOTIFICATION_COLLECTION: str = "notifications"
     
     # Server Configuration
     HOST: str = "127.0.0.1"

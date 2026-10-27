@@ -11,6 +11,10 @@ import {
   TariffConfig,
   TariffCalculationResult,
   TariffGetResponse,
+  NotificationListResponse,
+  NotificationUnreadCountResponse,
+  NotificationCheckResponse,
+  NotificationMarkReadResponse,
   ApiResponse,
 } from "../types/api";
 
@@ -190,5 +194,62 @@ export const api = {
   resetTariffConfig: async (profile: string = "commercial"): Promise<ApiResponse<TariffConfig>> =>
     request<TariffConfig>(`/api/tariff/reset?profile=${encodeURIComponent(profile)}`, {
       method: "POST",
+    }),
+
+  getNotifications: async ({
+    unread_only = false,
+    severity = null,
+    building = null,
+    limit = 50,
+    skip = 0,
+  }: {
+    unread_only?: boolean;
+    severity?: string | null;
+    building?: string | null;
+    limit?: number;
+    skip?: number;
+  } = {}): Promise<ApiResponse<NotificationListResponse>> => {
+    const params = new URLSearchParams({
+      unread_only: String(unread_only),
+      limit: String(limit),
+      skip: String(skip),
+    });
+    if (severity) params.append("severity", severity);
+    if (building) params.append("building", building);
+    return request<NotificationListResponse>(`/api/notifications?${params.toString()}`);
+  },
+
+  getUnreadCount: async (): Promise<ApiResponse<NotificationUnreadCountResponse>> =>
+    request<NotificationUnreadCountResponse>("/api/notifications/unread-count"),
+
+  markNotificationAsRead: async (id: string): Promise<ApiResponse<NotificationMarkReadResponse>> =>
+    request<NotificationMarkReadResponse>(`/api/notifications/${encodeURIComponent(id)}/read`, {
+      method: "PATCH",
+    }),
+
+  markAllNotificationsAsRead: async (): Promise<ApiResponse<NotificationMarkReadResponse>> =>
+    request<NotificationMarkReadResponse>("/api/notifications/mark-all-read", {
+      method: "POST",
+    }),
+
+  runNotificationCheck: async ({
+    peak_threshold_pct = 30.0,
+    surge_std_dev = 2.0,
+  }: {
+    peak_threshold_pct?: number;
+    surge_std_dev?: number;
+  } = {}): Promise<ApiResponse<NotificationCheckResponse>> => {
+    const params = new URLSearchParams({
+      peak_threshold_pct: String(peak_threshold_pct),
+      surge_std_dev: String(surge_std_dev),
+    });
+    return request<NotificationCheckResponse>(`/api/notifications/check?${params.toString()}`, {
+      method: "POST",
+    });
+  },
+
+  deleteNotification: async (id: string): Promise<ApiResponse<{ success: boolean; id: string }>> =>
+    request<{ success: boolean; id: string }>(`/api/notifications/${encodeURIComponent(id)}`, {
+      method: "DELETE",
     }),
 };

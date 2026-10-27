@@ -239,3 +239,46 @@ export interface TariffGetResponse {
   campus_calculation: TariffCalculationResult;
 }
 
+export type NotificationSeverity = "critical" | "warning" | "info";
+export type NotificationType = "anomaly" | "high_consumption" | "baseline_surge";
+
+export interface NotificationItem {
+  id: string;
+  title: string;
+  message: string;
+  severity: NotificationSeverity;
+  notification_type: NotificationType;
+  building: string;
+  detection_date?: string | null;
+  observed_kwh?: number | null;
+  baseline_kwh?: number | null;
+  metric_deviation_pct?: number | null;
+  dedup_key: string;
+  is_read: boolean;
+  created_at: string;
+  metadata?: Record<string, any>;
+}
+
+export interface NotificationListResponse {
+  total: number;
+  unread_count: number;
+  items: NotificationItem[];
+}
+
+export interface NotificationUnreadCountResponse {
+  unread_count: number;
+}
+
+export interface NotificationCheckResponse {
+  message: string;
+  new_notifications_count: number;
+  total_notifications: number;
+  unread_count: number;
+}
+
+export interface NotificationMarkReadResponse {
+  success: boolean;
+  marked_count: number;
+  unread_count: number;
+}
+

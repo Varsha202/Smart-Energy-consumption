@@ -5,6 +5,7 @@ from .forecast import router as forecast_router
 from .anomalies import router as anomalies_router
 from .recommendations import router as recommendations_router
 from .tariff import router as tariff_router
+from .notifications import router as notifications_router
 
 __all__ = [
     "health_router",
@@ -13,5 +14,7 @@ __all__ = [
     "forecast_router",
     "anomalies_router",
     "recommendations_router",
-    "tariff_router"
+    "tariff_router",
+    "notifications_router"
 ]
+

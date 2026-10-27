@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from enum import Enum
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field, field_validator, model_validator
 
@@ -340,4 +341,58 @@ class TariffCalculationResult(BaseModel):
     cost_difference_inr: float
     percentage_difference: float
     notes: str
+
+
+# ---------------- NOTIFICATION & ALERT SCHEMAS ----------------
+
+class NotificationSeverity(str, Enum):
+    CRITICAL = "critical"
+    WARNING = "warning"
+    INFO = "info"
+
+
+class NotificationType(str, Enum):
+    ANOMALY = "anomaly"
+    HIGH_CONSUMPTION = "high_consumption"
+    BASELINE_SURGE = "baseline_surge"
+
+
+class NotificationItem(BaseModel):
+    id: str
+    title: str
+    message: str
+    severity: str  # critical, warning, info
+    notification_type: str  # anomaly, high_consumption, baseline_surge
+    building: str
+    detection_date: Optional[str] = None
+    observed_kwh: Optional[float] = None
+    baseline_kwh: Optional[float] = None
+    metric_deviation_pct: Optional[float] = None
+    dedup_key: str
+    is_read: bool = False
+    created_at: str
+    metadata: Optional[Dict[str, Any]] = None
+
+
+class NotificationListResponse(BaseModel):
+    total: int
+    unread_count: int
+    items: List[NotificationItem]
+
+
+class NotificationUnreadCountResponse(BaseModel):
+    unread_count: int
+
+
+class NotificationCheckResponse(BaseModel):
+    message: str
+    new_notifications_count: int
+    total_notifications: int
+    unread_count: int
+
+
+class NotificationMarkReadResponse(BaseModel):
+    success: bool
+    marked_count: int
+    unread_count: int
 

@@ -41,7 +41,7 @@ class MongoDBManager:
             # We do not crash the application so health checks can report the status gracefully
 
     def _ensure_indexes(self) -> None:
-        """Create unique index on date to prevent accidental duplicate entries."""
+        """Create unique indexes to prevent accidental duplicate entries."""
         if self._db is not None:
             try:
                 collection = self._db[settings.ENERGY_COLLECTION]
@@ -49,6 +49,15 @@ class MongoDBManager:
                 logger.info("Ensured unique index on '%s.date'", settings.ENERGY_COLLECTION)
             except Exception as e:
                 logger.warning("Could not create index on energy collection: %s", str(e))
+
+            try:
+                notif_collection = self._db[settings.NOTIFICATION_COLLECTION]
+                notif_collection.create_index([("dedup_key", ASCENDING)], unique=True)
+                notif_collection.create_index([("is_read", ASCENDING)])
+                notif_collection.create_index([("created_at", ASCENDING)])
+                logger.info("Ensured indexes on '%s'", settings.NOTIFICATION_COLLECTION)
+            except Exception as e:
+                logger.warning("Could not create index on notification collection: %s", str(e))
 
     def ping(self) -> bool:
         """Check if the database server is responsive."""
@@ -76,6 +85,11 @@ class MongoDBManager:
         """Retrieve the energy collection from the active database."""
         db = self.get_database()
         return db[settings.ENERGY_COLLECTION]
+
+    def get_notification_collection(self) -> Collection:
+        """Retrieve the notifications collection from the active database."""
+        db = self.get_database()
+        return db[settings.NOTIFICATION_COLLECTION]
 
     def close(self) -> None:
         """Safely close client connections."""
