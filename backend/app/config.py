@@ -31,6 +31,15 @@ def _resolve_data_path(filename: str, env_var: str) -> str:
     return os.path.join(repo_root, "data", filename)
 
 
+def _resolve_env_file() -> str:
+    """Resolve env file dynamically, prioritizing backend/.env then root .env."""
+    backend_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    backend_env = os.path.join(backend_root, ".env")
+    if os.path.exists(backend_env):
+        return os.path.abspath(backend_env)
+    return ".env"
+
+
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Smart Campus Energy Consumption Analytics System"
     VERSION: str = "1.0.0"
@@ -80,7 +89,7 @@ class Settings(BaseSettings):
     TARIFF_FALLBACK_FILE: str = _resolve_data_path("tariff_config.json", "TARIFF_CONFIG_PATH")
 
     class Config:
-        env_file = ".env"
+        env_file = _resolve_env_file()
         env_file_encoding = "utf-8"
         extra = "ignore"
 
