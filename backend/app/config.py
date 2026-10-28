@@ -5,6 +5,32 @@ from pydantic import field_validator
 from typing import List, Union, Any
 
 
+def _resolve_data_path(filename: str, env_var: str) -> str:
+    """Resolve data file path dynamically across repository root and backend directory."""
+    env_override = os.getenv(env_var)
+    if env_override and os.path.exists(env_override):
+        return os.path.abspath(env_override)
+
+    current_file_dir = os.path.dirname(os.path.abspath(__file__))  # backend/app
+    backend_root = os.path.dirname(current_file_dir)                # backend
+    repo_root = os.path.dirname(backend_root)                      # repo root
+    cwd = os.getcwd()
+
+    candidates = [
+        os.path.join(repo_root, "data", filename),
+        os.path.join(backend_root, "data", filename),
+        os.path.join(cwd, "data", filename),
+        os.path.join(cwd, "backend", "data", filename),
+        os.path.join(backend_root, filename),
+    ]
+
+    for path in candidates:
+        if os.path.exists(path):
+            return os.path.abspath(path)
+
+    return os.path.join(repo_root, "data", filename)
+
+
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Smart Campus Energy Consumption Analytics System"
     VERSION: str = "1.0.0"
@@ -21,15 +47,12 @@ class Settings(BaseSettings):
     HOST: str = "127.0.0.1"
     PORT: int = 8000
     
-    # CORS Configuration
+    # CORS Configuration - defaults to local frontend; overridden in production by CORS_ORIGINS env var
     CORS_ORIGINS: List[str] = [
-        "http://localhost:8501",      # Streamlit default
-        "http://127.0.0.1:8501",
         "http://localhost:3000",      # React/Next.js default
         "http://127.0.0.1:3000",
         "http://localhost:8000",
         "http://127.0.0.1:8000",
-        "*"
     ]
 
     @field_validator("CORS_ORIGINS", mode="before")
@@ -40,10 +63,11 @@ class Settings(BaseSettings):
                     return json.loads(v)
                 except Exception:
                     pass
-            return [i.strip() for i in v.split(",") if i.strip()]
+            origins = [i.strip() for i in v.split(",") if i.strip()]
+            return origins if origins else ["http://localhost:3000"]
         elif isinstance(v, list):
             return v
-        return ["*"]
+        return ["http://localhost:3000"]
     
     # Energy Analytics Parameters (Standard Defensible Benchmarks)
     # CEA (Central Electricity Authority, India) CO2 Baseline database ~0.716 kg CO2/kWh for Indian grid
@@ -51,17 +75,9 @@ class Settings(BaseSettings):
     # Typical Commercial/Educational High Tension (HT) Tariff in INR (₹) per kWh
     DEFAULT_TARIFF_INR_PER_KWH: float = 8.50
     
-    # Data path default
-    DEFAULT_DATASET_PATH: str = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-        "data",
-        "preprocessed_energy.csv"
-    )
-    TARIFF_FALLBACK_FILE: str = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-        "data",
-        "tariff_config.json"
-    )
+    # Dynamic Data path resolution (supports repo root and backend directory)
+    DEFAULT_DATASET_PATH: str = _resolve_data_path("preprocessed_energy.csv", "DATASET_PATH")
+    TARIFF_FALLBACK_FILE: str = _resolve_data_path("tariff_config.json", "TARIFF_CONFIG_PATH")
 
     class Config:
         env_file = ".env"

@@ -8,7 +8,13 @@ venv/
 .venv/
 ENV/
 .env
+.env*.local
+.env.*
+!.env.example
 backend/.env
+backend/.env*.local
+backend/.env.*
+!backend/.env.example
 node_modules/
 .next/
 frontend/
